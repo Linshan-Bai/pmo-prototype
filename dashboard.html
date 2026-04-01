@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMO 项目管理平台 | 工作台</title>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/npm/tdesign-vue-next/dist/reset.css">
+    <link rel="stylesheet" href="https://tdesign.tencent.com/npm/tdesign-vue-next/dist/tdesign.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0052d9;
+            --success-color: #00a870;
+            --warning-color: #ed7b2f;
+            --danger-color: #e34d59;
+            --info-color: #6175d6;
+            --bg-light: #f6f8fa;
+            --border-color: #e5e5e5;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: #333;
+        }
+        
+        .app-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 8px 12px 8px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 300px;
+            font-size: 14px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .nav-item:hover {
+            background: #f0f5ff;
+            color: var(--primary-color);
+        }
+        
+        .nav-item.active {
+            background: #e8f3ff;
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0045b8;
+        }
+        
+        .btn-outline {
+            border-color: var(--border-color);
+            background: white;
+            color: #555;
+        }
+        
+        .btn-outline:hover {
+            background: #f6f8fa;
+            border-color: #999;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-primary {
+            background: #e8f3ff;
+            color: var(--primary-color);
+        }
+        
+        .badge-warning {
+            background: #fff2e8;
+            color: var(--warning-color);
+        }
+        
+        .badge-success {
+            background: #e7faf0;
+            color: var(--success-color);
+        }
+        
+        .badge-danger {
+            background: #fee;
+            color: var(--danger-color);
+        }
+        
+        .todo-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+        
+        .todo-content {
+            flex: 1;
+            margin-left: 12px;
+        }
+        
+        .todo-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .todo-meta {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .project-item {
+            margin-bottom: 16px;
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .project-name {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .alert-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+        
+        .alert-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .alert-warning {
+            background: #fff2e8;
+            color: var(--warning-color);
+        }
+        
+        .alert-danger {
+            background: #fee;
+            color: var(--danger-color);
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+        
+        .col-span-4 { grid-column: span 4; }
+        .col-span-6 { grid-column: span 6; }
+        .col-span-8 { grid-column: span 8; }
+        .col-span-12 { grid-column: span 12; }
+        
+        @media (max-width: 1200px) {
+            .col-span-4 { grid-column: span 6; }
+            .col-span-8 { grid-column: span 12; }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .col-span-4, .col-span-6, .col-span-8 { grid-column: span 12; }
+            .search-box input { width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="app-header">
+        <div class="logo">
+            <i class="fas fa-project-diagram"></i>
+            <span>PMO 项目管理平台</span>
+        </div>
+        
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索项目、任务、用户...">
+            </div>
+            
+            <div class="notification">
+                <i class="fas fa-bell" style="font-size: 20px; color: #666; cursor: pointer;"></i>
+            </div>
+            
+            <div class="user-avatar" id="userAvatar">
+                张
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主布局 -->
+    <div class="main-container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>工作台</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-briefcase"></i>
+                <span>商机管理</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-layer-group"></i>
+                <span>项目中心</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-tasks"></i>
+                <span>需求管理</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-check-square"></i>
+                <span>任务看板</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-bug"></i>
+                <span>缺陷管理</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-rocket"></i>
+                <span>部署实施</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-headset"></i>
+                <span>运维工单</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>报表统计</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </nav>
+        
+        <!-- 主内容区 -->
+        <main class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <div class="page-title">
+                    工作台
+                    <span style="font-size: 14px; font-weight: normal; color: #999; margin-left: 12px;">
+                        👋 欢迎回来，张经理！今天是 2026-03-31
+                    </span>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-plus"></i>
+                        快速创建
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新数据
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 仪表盘网格 -->
+            <div class="dashboard-grid">
+                <!-- 待处理事项 -->
+                <div class="card col-span-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-clipboard-list" style="color: var(--primary-color);"></i>
+                            待处理事项
+                            <span class="badge badge-primary">3</span>
+                        </div>
+                        <a href="#" style="font-size: 12px; color: var(--primary-color);">查看全部</a>
+                    </div>
+                    
+                    <div class="todo-list">
+                        <div class="todo-item">
+                            <div class="alert-icon alert-warning">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="todo-content">
+                                <div class="todo-title">审批：项目A 部署上线申请</div>
+                                <div class="todo-meta">
+                                    <span><i class="far fa-clock"></i> 2小时前</span>
+                                    <span>申请人：李技术</span>
+                                </div>
+                            </div>
+                            <div class="badge badge-warning">待审批</div>
+                        </div>
+                        
+                        <div class="todo-item">
+                            <div class="alert-icon" style="background: #e7faf0; color: var(--success-color);">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="todo-content">
+                                <div class="todo-title">任务：完成订单模块API接口开发</div>
+                                <div class="todo-meta">
+                                    <span><i class="far fa-clock"></i> 昨天</span>
+                                    <span>截止：今天 18:00</span>
+                                </div>
+                            </div>
+                            <div class="badge badge-primary">进行中</div>
+                        </div>
+                        
+                        <div class="todo-item">
+                            <div class="alert-icon alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="todo-content">
+                                <div class="todo-title">工单：客户B 服务器故障紧急处理</div>
+                                <div class="todo-meta">
+                                    <span><i class="far fa-clock"></i> 30分钟前</span>
+                                    <span>SLA: 紧急 (2小时内)</span>
+                                </div>
+                            </div>
+                            <div class="badge badge-danger">超时预警</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 项目进度 -->
+                <div class="card col-span-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-line" style="color: var(--success-color);"></i>
+                            我的项目
+                            <span class="badge badge-success">5个</span>
+                        </div>
+                        <a href="#" style="font-size: 12px; color: var(--primary-color);">新建项目</a>
+                    </div>
+                    
+                    <div class="project-list">
+                        <div class="project-item">
+                            <div class="project-header">
+                                <div class="project-name">
+                                    <i class="fas fa-circle" style="color: var(--success-color); font-size: 8px;"></i>
+                                    智慧园区管理系统
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600;">80%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%; background: var(--success-color);"></div>
+                            </div>
+                            <div class="project-meta">
+                                <span>健康度: <strong style="color: var(--success-color);">良好</strong></span>
+                                <span>剩余: 15天</span>
+                            </div>
+                        </div>
+                        
+                        <div class="project-item">
+                            <div class="project-header">
+                                <div class="project-name">
+                                    <i class="fas fa-circle" style="color: var(--warning-color); font-size: 8px;"></i>
+                                    金融科技大数据平台
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600;">60%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%; background: var(--warning-color);"></div>
+                            </div>
+                            <div class="project-meta">
+                                <span>健康度: <strong style="color: var(--warning-color);">一般</strong></span>
+                                <span>延期: 3天</span>
+                            </div>
+                        </div>
+                        
+                        <div class="project-item">
+                            <div class="project-header">
+                                <div class="project-name">
+                                    <i class="fas fa-circle" style="color: var(--danger-color); font-size: 8px;"></i>
+                                    制造业MES系统升级
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600;">35%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 35%; background: var(--danger-color);"></div>
+                            </div>
+                            <div class="project-meta">
+                                <span>健康度: <strong style="color: var(--danger-color);">预警</strong></span>
+                                <span>延期风险: 高</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 预警提醒 -->
+                <div class="card col-span-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i>
+                            预警提醒
+                            <span class="badge badge-warning">2</span>
+                        </div>
+                        <a href="#" style="font-size: 12px; color: var(--primary-color);">全部标记已读</a>
+                    </div>
+                    
+                    <div class="alert-list">
+                        <div class="alert-item">
+                            <div class="alert-icon alert-warning">
+                                <i class="fas fa-calendar-exclamation"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div style="font-weight: 500;">项目C 关键里程碑即将到期</div>
+                                <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                                    需求评审会议 将于2天后举行，请提前准备材料
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item">
+                            <div class="alert-icon alert-danger">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div style="font-weight: 500;">项目D 预算超支 15%</div>
+                                <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                                    当前实际成本已超出预算，需要申请追加预算
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 项目健康度统计 -->
+                <div class="card col-span-8">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-heartbeat" style="color: var(--info-color);"></i>
+                            项目健康度概览
+                        </div>
+                        <div>
+                            <select style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;">
+                                <option>本月</option>
+                                <option>本季度</option>
+                                <option>本年</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <!-- 模拟健康度图表 -->
+                        <div style="display: flex; height: 160px; align-items: flex-end; gap: 20px; padding: 20px 0;">
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div style="height: 120px; width: 40px; background: var(--success-color); border-radius: 4px 4px 0 0;"></div>
+                                <div style="margin-top: 8px; font-size: 12px;">项目A</div>
+                                <div style="font-size: 14px; font-weight: 600;">85%</div>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div style="height: 90px; width: 40px; background: var(--warning-color); border-radius: 4px 4px 0 0;"></div>
+                                <div style="margin-top: 8px; font-size: 12px;">项目B</div>
+                                <div style="font-size: 14px; font-weight: 600;">65%</div>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div style="height: 140px; width: 40px; background: var(--success-color); border-radius: 4px 4px 0 0;"></div>
+                                <div style="margin-top: 8px; font-size: 12px;">项目C</div>
+                                <div style="font-size: 14px; font-weight: 600;">92%</div>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div style="height: 60px; width: 40px; background: var(--danger-color); border-radius: 4px 4px 0 0;"></div>
+                                <div style="margin-top: 8px; font-size: 12px;">项目D</div>
+                                <div style="font-size: 14px; font-weight: 600;">45%</div>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div style="height: 110px; width: 40px; background: var(--success-color); border-radius: 4px 4px 0 0;"></div>
+                                <div style="margin-top: 8px; font-size: 12px;">项目E</div>
+                                <div style="font-size: 14px; font-weight: 600;">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; gap: 24px; margin-top: 20px; font-size: 12px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: var(--success-color); border-radius: 2px;"></div>
+                            <span>健康 (≥ 80%)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: var(--warning-color); border-radius: 2px;"></div>
+                            <span>一般 (60-79%)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: var(--danger-color); border-radius: 2px;"></div>
+                            <span>预警 (≤ 59%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 近期活动 -->
+                <div class="card col-span-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-history" style="color: #999;"></i>
+                            近期活动
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 14px;">
+                        <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                            <div style="color: #999; font-size: 12px;">10:25 AM</div>
+                            <div>王开发 完成了任务 <span style="color: var(--primary-color);">"用户登录模块"</span></div>
+                        </div>
+                        <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                            <div style="color: #999; font-size: 12px;">09:45 AM</div>
+                            <div>客户张总 提交了需求变更申请</div>
+                        </div>
+                        <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                            <div style="color: #999; font-size: 12px;">昨天 18:30</div>
+                            <div>项目A 已进入 <span style="color: var(--warning-color);">"测试阶段"</span></div>
+                        </div>
+                        <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                            <div style="color: #999; font-size: 12px;">昨天 15:20</div>
+                            <div>李测试 提交了缺陷 <span style="color: var(--danger-color);">"首页加载缓慢"</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商机漏斗 -->
+                <div class="card col-span-6">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-filter" style="color: var(--primary-color);"></i>
+                            商机漏斗
+                        </div>
+                        <div style="font-size: 12px; color: #999;">本月数据</div>
+                    </div>
+                    
+                    <div style="display: flex; height: 160px; align-items: center; padding: 20px;">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: var(--primary-color);">42</div>
+                            <div style="font-size: 12px; color: #999;">潜在商机</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: #6175d6;">28</div>
+                            <div style="font-size: 12px; color: #999;">跟进中</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: var(--warning-color);">15</div>
+                            <div style="font-size: 12px; color: #999;">报价中</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: var(--success-color);">8</div>
+                            <div style="font-size: 12px; color: #999;">赢单</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 600; color: var(--danger-color);">5</div>
+                            <div style="font-size: 12px; color: #999;">输单</div>
+                        </div>
+                    </div>
+                    
+                    <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin: 0 20px 20px;">
+                        <div style="height: 100%; width: 30%; background: var(--primary-color); float: left;"></div>
+                        <div style="height: 100%; width: 20%; background: #6175d6; float: left;"></div>
+                        <div style="height: 100%; width: 12%; background: var(--warning-color); float: left;"></div>
+                        <div style="height: 100%; width: 7%; background: var(--success-color); float: left;"></div>
+                        <div style="height: 100%; width: 4%; background: var(--danger-color); float: left;"></div>
+                    </div>
+                </div>
+                
+                <!-- 团队效能 -->
+                <div class="card col-span-6">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-users" style="color: var(--success-color);"></i>
+                            团队效能
+                        </div>
+                        <div style="font-size: 12px; color: #999;">上周数据</div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: 600;">156</div>
+                            <div style="font-size: 12px; color: #999;">完成工时</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: 600;">24</div>
+                            <div style="font-size: 12px; color: #999;">完成任务</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: 600;">89%</div>
+                            <div style="font-size: 12px; color: #999;">准时率</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: 600;">3.2</div>
+                            <div style="font-size: 12px; color: #999;">人均任务</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 0 20px 20px;">
+                        <div style="font-size: 12px; color: #999; margin-bottom: 8px;">团队成员贡献</div>
+                        <div style="margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>张开发</span>
+                                <span>32h</span>
+                            </div>
+                            <div style="height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: 85%; background: var(--success-color);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>李测试</span>
+                                <span>28h</span>
+                            </div>
+                            <div style="height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: 75%; background: var(--primary-color);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>王运维</span>
+                                <span>24h</span>
+                            </div>
+                            <div style="height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: 65%; background: var(--info-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 简单的交互
+        document.getElementById('userAvatar').addEventListener('click', function() {
+            alert('用户菜单：个人中心、设置、退出登录');
+        });
+        
+        // 模拟卡片点击
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!e.target.closest('a') && !e.target.closest('button')) {
+                    console.log('点击了卡片：' + this.querySelector('.card-title').textContent);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
