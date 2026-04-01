@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO | 任务看板</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root{--primary:#0052d9;--success:#00a870;--warning:#ed7b2f;--danger:#e34d59;--info:#6175d6;--bg:#f0f2f5;--border:#e5e5e5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#333}
+.header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--primary);text-decoration:none}
+.header-right{display:flex;align-items:center;gap:16px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
+.toolbar{background:#fff;padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.toolbar .project-name{font-weight:600;font-size:15px}
+.toolbar .sep{width:1px;height:20px;background:#ddd}
+.iter-select{padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:13px}
+.filter-tag{padding:4px 12px;border-radius:14px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff}
+.filter-tag.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.kanban-wrap{display:flex;gap:16px;padding:20px 24px;overflow-x:auto;height:calc(100vh - 56px - 49px);align-items:flex-start}
+.kanban-col{min-width:290px;max-width:290px;background:#f6f8fa;border-radius:8px;display:flex;flex-direction:column;max-height:100%}
+.kanban-col-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600}
+.kanban-col-header .count{background:#e5e5e5;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:500}
+.kanban-col-body{padding:0 8px 8px;flex:1;overflow-y:auto;min-height:100px}
+.kanban-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:8px;cursor:grab;transition:.15s}
+.kanban-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.kanban-card:active{cursor:grabbing;opacity:.7}
+.kanban-card-title{font-size:13px;font-weight:500;margin-bottom:8px;line-height:1.4}
+.kanban-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#999}
+.tag{display:inline-block;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px}
+.tag-feature{background:#e8f3ff;color:var(--primary)}
+.tag-bug{background:#fee;color:var(--danger)}
+.tag-task{background:#e7faf0;color:var(--success)}
+.tag-imp{background:#fff2e8;color:var(--warning)}
+.priority{font-size:11px;padding:2px 6px;border-radius:3px}
+.p-urgent{background:#fee;color:var(--danger)}
+.p-high{background:#fff2e8;color:var(--warning)}
+.p-normal{background:#f0f2ff;color:var(--info)}
+.p-low{background:#f5f5f5;color:#999}
+.member-sm{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-right:-6px;border:2px solid #fff}
+.kanban-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid #f5f5f5}
+.add-card{padding:10px;text-align:center;color:#999;cursor:pointer;font-size:13px;border-radius:4px;margin:0 8px 8px;transition:.15s}
+.add-card:hover{background:#e8e8e8}
+.col-todo .kanban-col-header{color:var(--info)}
+.col-progress .kanban-col-header{color:var(--primary)}
+.col-review .kanban-col-header{color:var(--warning)}
+.col-done .kanban-col-header{color:var(--success)}
+</style>
+</head>
+<body>
+<header class="header">
+  <a class="logo" href="dashboard.html"><i class="fas fa-project-diagram"></i> PMO 项目管理平台</a>
+  <div class="header-right">
+    <i class="fas fa-bell" style="font-size:17px;color:#666;cursor:pointer"></i>
+    <div class="avatar">张</div>
+  </div>
+</header>
+<div class="toolbar">
+  <a href="projects.html" style="color:var(--primary);font-size:13px"><i class="fas fa-arrow-left"></i> 返回</a>
+  <div class="sep"></div>
+  <span class="project-name">🚀 智慧园区综合管理系统</span>
+  <div class="sep"></div>
+  <select class="iter-select">
+    <option> Sprint 6 (03-17 ~ 03-31) </option>
+    <option> Sprint 5 (03-03 ~ 03-14) </option>
+    <option> Sprint 4 (02-17 ~ 02-28) </option>
+  </select>
+  <div style="flex:1"></div>
+  <span class="filter-tag active">全部</span>
+  <span class="filter-tag">我负责</span>
+  <span class="filter-tag">紧急</span>
+  <button style="padding:6px 14px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer"><i class="fas fa-plus"></i> 新建任务</button>
+</div>
+<div class="kanban-wrap">
+  <!-- 待处理 -->
+  <div class="kanban-col col-todo">
+    <div class="kanban-col-header">
+      <span>📦 待处理 <span class="count">4</span></span>
+      <i class="fas fa-ellipsis-h" style="cursor:pointer;color:#999"></i>
+    </div>
+    <div class="kanban-col-body">
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-feature">功能</span><span class="priority p-urgent">紧急</span></div>
+        <div class="kanban-card-title">访客预约功能 - 微信小程序端</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--primary)">张</span><span class="member-sm" style="background:var(--success)">李</span></div>
+          <span style="color:#999"><i class="far fa-clock"></i> 8h</span>
+        </div>
+      </div>
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-bug">缺陷</span><span class="priority p-high">高</span></div>
+        <div class="kanban-card-title">车位导航路线计算偶尔偏移</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--danger)">陈</span></div>
+          <span style="color:#999"><i class="far fa-clock"></i> 4h</span>
+        </div>
+      </div>
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-task">任务</span><span class="priority p-normal">中</span></div>
+        <div class="kanban-card-title">能耗监控大屏 UI 改版</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--info)">王</span></div>
+          <span style="color:#999"><i class="far fa-clock"></i> 16h</span>
+        </div>
+      </div>
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-imp">优化</span><span class="priority p-low">低</span></div>
+        <div class="kanban-card-title">门禁日志查询性能优化</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--warning)">赵</span></div>
+          <span style="color:#999"><i class="far fa-clock"></i> 3h</span>
+        </div>
+      </div>
+    </div>
+    <div class="add-card"><i class="fas fa-plus"></i> 添加任务</div>
+  </div>
+
+  <!-- 进行中 -->
+  <div class="kanban-col col-progress">
+    <div class="kanban-col-header">
+      <span>🔨 进行中 <span class="count">3</span></span>
+      <i class="fas fa-ellipsis-h" style="cursor:pointer;color:#999"></i>
+    </div>
+    <div class="kanban-col-body">
+      <div class="kanban-card" style="border-left:3px solid var(--primary)">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-feature">功能</span><span class="priority p-urgent">紧急</span></div>
+        <div class="kanban-card-title">订单模块 API 接口开发</div>
+        <div style="background:#f0f2f5;border-radius:4px;height:4px;margin:8px 0;overflow:hidden"><div style="width:65%;height:100%;background:var(--primary);border-radius:4px"></div></div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--primary)">张</span></div>
+          <span style="color:var(--primary);font-size:11px">65%</span>
+        </div>
+      </div>
+      <div class="kanban-card" style="border-left:3px solid var(--warning)">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-feature">功能</span><span class="priority p-high">高</span></div>
+        <div class="kanban-card-title">门禁系统对接第三方SDK</div>
+        <div style="background:#f0f2f5;border-radius:4px;height:4px;margin:8px 0;overflow:hidden"><div style="width:40%;height:100%;background:var(--warning);border-radius:4px"></div></div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--warning)">赵</span></div>
+          <span style="color:var(--warning);font-size:11px">40%</span>
+        </div>
+      </div>
+      <div class="kanban-card" style="border-left:3px solid var(--success)">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-task">任务</span><span class="priority p-normal">中</span></div>
+        <div class="kanban-card-title">数据库索引优化 & 慢查询治理</div>
+        <div style="background:#f0f2f5;border-radius:4px;height:4px;margin:8px 0;overflow:hidden"><div style="width:80%;height:100%;background:var(--success);border-radius:4px"></div></div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--info)">周</span></div>
+          <span style="color:var(--success);font-size:11px">80%</span>
+        </div>
+      </div>
+    </div>
+    <div class="add-card"><i class="fas fa-plus"></i> 添加任务</div>
+  </div>
+
+  <!-- 待审查 -->
+  <div class="kanban-col col-review">
+    <div class="kanban-col-header">
+      <span>👁️ 待审查 <span class="count">2</span></span>
+      <i class="fas fa-ellipsis-h" style="cursor:pointer;color:#999"></i>
+    </div>
+    <div class="kanban-col-body">
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-feature">功能</span><span class="priority p-high">高</span></div>
+        <div class="kanban-card-title">物业缴费 - 支付宝/微信支付集成</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--success)">李</span></div>
+          <span style="color:#999"><i class="fas fa-code-branch"></i> PR #128</span>
+        </div>
+      </div>
+      <div class="kanban-card">
+        <div style="display:flex;gap:4px;margin-bottom:6px"><span class="tag tag-bug">缺陷</span><span class="priority p-normal">中</span></div>
+        <div class="kanban-card-title">修复：巡检任务时间显示不正确</div>
+        <div class="kanban-card-footer">
+          <div><span class="member-sm" style="background:var(--danger)">陈</span></div>
+          <span style="color:#999"><i class="fas fa-code-branch"></i> PR #131</span>
+        </div>
+      </div>
+    </div>
+    <div class="add-card"><i class="fas fa-plus"></i> 添加任务</div>
+  </div>
+
+  <!-- 已完成 -->
+  <div class="kanban-col col-done">
+    <div class="kanban-col-header">
+      <span>✅ 已完成 <span class="count">5</span></span>
+      <i class="fas fa-ellipsis-h" style="cursor:pointer;color:#999"></i>
+    </div>
+    <div class="kanban-col-body">
+      <div class="kanban-card" style="opacity:.7">
+        <div class="kanban-card-title" style="text-decoration:line-through">用户登录 & JWT 鉴权</div>
+        <div class="kanban-card-footer"><div><span class="member-sm" style="background:var(--primary)">张</span></div><span style="color:var(--success)">✓ 已合并</span></div>
+      </div>
+      <div class="kanban-card" style="opacity:.7">
+        <div class="kanban-card-title" style="text-decoration:line-through">项目基础 CRUD 接口</div>
+        <div class="kanban-card-footer"><div><span class="member-sm" style="background:var(--info)">周</span></div><span style="color:var(--success)">✓ 已合并</span></div>
+      </div>
+      <div class="kanban-card" style="opacity:.7">
+        <div class="kanban-card-title" style="text-decoration:line-through">消息通知 - 站内信模块</div>
+        <div class="kanban-card-footer"><div><span class="member-sm" style="background:var(--warning)">赵</span></div><span style="color:var(--success)">✓ 已合并</span></div>
+      </div>
+      <div class="kanban-card" style="opacity:.7">
+        <div class="kanban-card-title" style="text-decoration:line-through">文件上传 - COS 对接</div>
+        <div class="kanban-card-footer"><div><span class="member-sm" style="background:var(--success)">李</span></div><span style="color:var(--success)">✓ 已合并</span></div>
+      </div>
+      <div class="kanban-card" style="opacity:.7">
+        <div class="kanban-card-title" style="text-decoration:line-through">权限管理 - RBAC 实现</div>
+        <div class="kanban-card-footer"><div><span class="member-sm" style="background:var(--primary)">张</span></div><span style="color:var(--success)">✓ 已合并</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
