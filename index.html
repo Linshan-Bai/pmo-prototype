@@ -8,62 +8,99 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(135deg,#0052d9 0%,#6175d6 50%,#00a870 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.container{max-width:900px;width:100%}
+.container{max-width:1100px;width:100%}
 .hero{text-align:center;margin-bottom:40px}
 .hero h1{font-size:36px;font-weight:800;color:#fff;margin-bottom:8px}
 .hero p{font-size:16px;color:rgba(255,255,255,.75)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-.card{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:12px;padding:24px;cursor:pointer;transition:.25s;text-decoration:none;color:#333;display:block;border:1px solid rgba(255,255,255,.3)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:12px;padding:22px;cursor:pointer;transition:.25s;text-decoration:none;color:#333;display:block;border:1px solid rgba(255,255,255,.3)}
 .card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.2)}
-.card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin-bottom:14px}
-.card h3{font-size:16px;font-weight:600;margin-bottom:6px}
-.card p{font-size:13px;color:#777;line-height:1.5}
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;margin-left:8px;vertical-align:middle}
+.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:12px}
+.card h3{font-size:15px;font-weight:600;margin-bottom:5px}
+.card p{font-size:12px;color:#777;line-height:1.5}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;margin-left:6px;vertical-align:middle}
 .tag-web{background:#e8f3ff;color:#0052d9}
 .tag-mp{background:#e7faf0;color:#00a870}
+.section{margin-bottom:24px}
+.section-title{color:rgba(255,255,255,.6);font-size:13px;font-weight:500;margin-bottom:12px;padding-left:4px;text-transform:uppercase;letter-spacing:1px}
 .footer{text-align:center;margin-top:40px;color:rgba(255,255,255,.5);font-size:12px}
+.badge-new{background:#e34d59;color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:600}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="hero">
     <h1><i class="fas fa-project-diagram"></i> PMO 项目管理平台</h1>
-    <p>全流程原型演示 · Web端 + 微信小程序端</p>
+    <p>全流程原型演示 · Web端 + 微信小程序端 · 共 11 个页面</p>
   </div>
-  <div class="grid">
-    <a class="card" href="dashboard.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#0052d9,#6175d6)"><i class="fas fa-tachometer-alt"></i></div>
-      <h3>工作台 Dashboard <span class="tag tag-web">Web</span></h3>
-      <p>项目进度、待办事项、预警提醒、团队效能、商机漏斗总览</p>
-    </a>
-    <a class="card" href="projects.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#6175d6,#a78bfa)"><i class="fas fa-layer-group"></i></div>
-      <h3>项目中心 <span class="tag tag-web">Web</span></h3>
-      <p>项目列表（卡片/列表视图切换）、筛选、新建项目弹窗、统计栏</p>
-    </a>
-    <a class="card" href="project_detail.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#00a870,#34d399)"><i class="fas fa-file-alt"></i></div>
-      <h3>项目详情 <span class="tag tag-web">Web</span></h3>
-      <p>项目概览、里程碑时间线、成员管理、需求/缺陷/任务 Tab</p>
-    </a>
-    <a class="card" href="kanban.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#ed7b2f,#f59e0b)"><i class="fas fa-columns"></i></div>
-      <h3>任务看板 <span class="tag tag-web">Web</span></h3>
-      <p>Kanban 拖拽看板：待处理 → 进行中 → 待审查 → 已完成</p>
-    </a>
-    <a class="card" href="tickets.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#e34d59,#f43f5e)"><i class="fas fa-headset"></i></div>
-      <h3>运维工单 <span class="tag tag-web">Web</span></h3>
-      <p>工单列表、SLA 进度条、状态筛选、统计面板</p>
-    </a>
-    <a class="card" href="miniapp.html">
-      <div class="card-icon" style="background:linear-gradient(135deg,#07c160,#34d399)"><i class="fab fa-weixin"></i></div>
-      <h3>微信小程序 <span class="tag tag-mp">小程序</span></h3>
-      <p>工作台、审批中心、工单提交，三屏手机原型展示</p>
-    </a>
+
+  <!-- Web 端页面 -->
+  <div class="section">
+    <div class="section-title"><i class="fas fa-desktop"></i> Web 端页面</div>
+    <div class="grid">
+      <a class="card" href="dashboard.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#0052d9,#6175d6)"><i class="fas fa-tachometer-alt"></i></div>
+        <h3>工作台 Dashboard <span class="tag tag-web">Web</span></h3>
+        <p>项目进度、待办事项、预警提醒、团队效能、商机漏斗总览（ECharts 图表）</p>
+      </a>
+      <a class="card" href="opportunities.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i class="fas fa-briefcase"></i></div>
+        <h3>商机管理 <span class="tag tag-web">Web</span><span class="badge-new">NEW</span></h3>
+        <p>销售漏斗、商机列表、新建商机弹窗、阶段筛选、转项目</p>
+      </a>
+      <a class="card" href="projects.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#6175d6,#a78bfa)"><i class="fas fa-layer-group"></i></div>
+        <h3>项目中心 <span class="tag tag-web">Web</span></h3>
+        <p>项目列表（卡片/列表视图切换）、筛选、新建项目弹窗、统计栏</p>
+      </a>
+      <a class="card" href="project_detail.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#00a870,#34d399)"><i class="fas fa-file-alt"></i></div>
+        <h3>项目详情 <span class="tag tag-web">Web</span></h3>
+        <p>项目概览、里程碑时间线、成员管理、需求/缺陷/任务 Tab</p>
+      </a>
+      <a class="card" href="requirements.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#0052d9,#38bdf8)"><i class="fas fa-tasks"></i></div>
+        <h3>需求管理 <span class="tag tag-web">Web</span><span class="badge-new">NEW</span></h3>
+        <p>Epic/Story 管理、MoSCoW 优先级、需求列表、进度追踪</p>
+      </a>
+      <a class="card" href="kanban.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#ed7b2f,#f59e0b)"><i class="fas fa-columns"></i></div>
+        <h3>任务看板 <span class="tag tag-web">Web</span></h3>
+        <p>Kanban 拖拽看板：待处理 → 进行中 → 待审查 → 已完成</p>
+      </a>
+      <a class="card" href="bugs.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#e34d59,#f43f5e)"><i class="fas fa-bug"></i></div>
+        <h3>缺陷管理 <span class="tag tag-web">Web</span><span class="badge-new">NEW</span></h3>
+        <p>严重程度分布、缺陷列表表格、P0-P3 分级、状态跟踪</p>
+      </a>
+      <a class="card" href="approvals.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"><i class="fas fa-clipboard-check"></i></div>
+        <h3>审批中心 <span class="tag tag-web">Web</span><span class="badge-new">NEW</span></h3>
+        <p>待审批/已审批/我发起的 Tab、审批流程链、部署/变更/预算审批</p>
+      </a>
+      <a class="card" href="tickets.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#e34d59,#f43f5e)"><i class="fas fa-headset"></i></div>
+        <h3>运维工单 <span class="tag tag-web">Web</span></h3>
+        <p>工单列表、SLA 进度条、状态筛选、统计面板</p>
+      </a>
+    </div>
   </div>
+
+  <!-- 小程序端 -->
+  <div class="section">
+    <div class="section-title"><i class="fab fa-weixin"></i> 微信小程序端</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+      <a class="card" href="miniapp.html">
+        <div class="card-icon" style="background:linear-gradient(135deg,#07c160,#34d399)"><i class="fab fa-weixin"></i></div>
+        <h3>微信小程序工作台 <span class="tag tag-mp">小程序</span></h3>
+        <p>工作台、审批中心、工单提交，三屏手机原型展示</p>
+      </a>
+    </div>
+  </div>
+
   <div class="footer">
-    PMO 全流程项目管理系统 · 原型设计 v1.0 · 2026-04-01
+    PMO 全流程项目管理系统 · 原型设计 v2.0 · 2026-04-01<br>
+    <span style="margin-top:4px;display:inline-block">在线访问：<a href="https://linshan-bai.github.io/pmo-prototype/" style="color:#fff;text-decoration:underline">https://linshan-bai.github.io/pmo-prototype/</a></span>
   </div>
 </div>
 </body>
