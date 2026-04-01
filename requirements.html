@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO | 需求管理</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root{--primary:#0052d9;--success:#00a870;--warning:#ed7b2f;--danger:#e34d59;--info:#6175d6;--bg:#f6f8fa;--border:#e5e5e5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#333}
+.header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--primary);text-decoration:none}
+.logo i{font-size:24px}
+.header-right{display:flex;align-items:center;gap:16px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
+.layout{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;background:#fff;border-right:1px solid var(--border);padding:16px 0;flex-shrink:0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.nav-item{padding:11px 20px;display:flex;align-items:center;gap:10px;color:#555;text-decoration:none;font-size:14px;transition:.2s}
+.nav-item:hover{background:#f0f5ff;color:var(--primary)}
+.nav-item.active{background:#e8f3ff;color:var(--primary);border-right:3px solid var(--primary);font-weight:500}
+.nav-item i{width:18px;text-align:center}
+.main{flex:1;padding:24px;overflow-y:auto}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:22px;font-weight:700}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:13px;cursor:pointer;transition:.2s}
+.filter-btn.active,.filter-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn{padding:8px 16px;border-radius:4px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-outline{border-color:var(--border);background:#fff;color:#555}
+
+/* 统计卡片 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:8px;padding:16px 20px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.stat-info .num{font-size:24px;font-weight:700}
+.stat-info .label{font-size:13px;color:#999;margin-top:2px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+
+/* 需求列表 */
+.req-list{background:#fff;border-radius:8px;border:1px solid var(--border)}
+.req-list-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.req-item{padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:flex-start;gap:16px;transition:.15s}
+.req-item:hover{background:#f8faff}
+.req-item:last-child{border-bottom:none}
+.req-id{font-size:12px;color:#999;font-family:monospace;margin-top:2px;min-width:100px}
+.req-content{flex:1}
+.req-title{font-size:14px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.req-desc{font-size:13px;color:#666;line-height:1.5;margin-bottom:8px}
+.req-meta{display:flex;gap:16px;font-size:12px;color:#999;align-items:center}
+.req-meta i{margin-right:4px}
+.req-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:120px}
+.tag{padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500;display:inline-block}
+.tag-must{background:#fee;color:var(--danger)}
+.tag-should{background:#fff2e8;color:var(--warning)}
+.tag-could{background:#e8f3ff;color:var(--primary)}
+.tag-wont{background:#f0f0f0;color:#999}
+.tag-todo{background:#e8f3ff;color:var(--primary)}
+.tag-doing{background:#fff2e8;color:var(--warning)}
+.tag-done{background:#e7faf0;color:var(--success)}
+.progress-mini{width:80px;height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.progress-mini .fill{height:100%;border-radius:3px}
+.priority-bar{width:4px;border-radius:2px;min-height:40px;flex-shrink:0}
+
+/* 分页 */
+.pagination{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#666}
+.page-btns{display:flex;gap:4px}
+.page-btn{padding:4px 10px;border:1px solid var(--border);border-radius:4px;background:#fff;cursor:pointer;font-size:13px}
+.page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .req-item{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="index.html" class="logo"><i class="fas fa-project-diagram"></i>PMO 项目管理平台</a>
+  <div class="header-right">
+    <span style="font-size:13px;color:#666"><i class="fas fa-bell" style="margin-right:12px;cursor:pointer"></i></span>
+    <div class="avatar">张</div>
+  </div>
+</header>
+<div class="layout">
+  <nav class="sidebar">
+    <a href="dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i>工作台</a>
+    <a href="opportunities.html" class="nav-item"><i class="fas fa-briefcase"></i>商机管理</a>
+    <a href="projects.html" class="nav-item"><i class="fas fa-layer-group"></i>项目中心</a>
+    <a href="requirements.html" class="nav-item active"><i class="fas fa-tasks"></i>需求管理</a>
+    <a href="kanban.html" class="nav-item"><i class="fas fa-check-square"></i>任务看板</a>
+    <a href="bugs.html" class="nav-item"><i class="fas fa-bug"></i>缺陷管理</a>
+    <a href="approvals.html" class="nav-item"><i class="fas fa-clipboard-check"></i>审批中心</a>
+    <a href="tickets.html" class="nav-item"><i class="fas fa-headset"></i>运维工单</a>
+    <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar"></i>报表统计</a>
+    <a href="#" class="nav-item"><i class="fas fa-cog"></i>系统设置</a>
+  </nav>
+  <main class="main">
+    <div class="toolbar">
+      <div style="display:flex;align-items:center;gap:16px">
+        <span class="page-title">需求管理</span>
+        <div class="filters">
+          <span class="filter-btn active">全部 (86)</span>
+          <span class="filter-btn">待评审 (12)</span>
+          <span class="filter-btn">已评审 (24)</span>
+          <span class="filter-btn">开发中 (18)</span>
+          <span class="filter-btn">已完成 (32)</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline"><i class="fas fa-file-export"></i> 导出</button>
+        <button class="btn btn-primary"><i class="fas fa-plus"></i> 新建需求</button>
+      </div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-info"><div class="num" style="color:var(--primary)">86</div><div class="label">总需求</div></div>
+        <div class="stat-icon" style="background:linear-gradient(135deg,#0052d9,#6175d6)"><i class="fas fa-list-alt"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info"><div class="num" style="color:var(--warning)">54</div><div class="label">Must Have</div></div>
+        <div class="stat-icon" style="background:linear-gradient(135deg,#ed7b2f,#f59e0b)"><i class="fas fa-fire"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info"><div class="num" style="color:var(--success)">32</div><div class="label">已完成</div></div>
+        <div class="stat-icon" style="background:linear-gradient(135deg,#00a870,#34d399)"><i class="fas fa-check-circle"></i></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info"><div class="num" style="color:var(--info)">37%</div><div class="label">完成率</div></div>
+        <div class="stat-icon" style="background:linear-gradient(135deg,#6175d6,#a78bfa)"><i class="fas fa-chart-pie"></i></div>
+      </div>
+    </div>
+
+    <!-- 需求列表 -->
+    <div class="req-list">
+      <div class="req-list-header">
+        <span style="font-size:13px;color:#999">共 86 条需求 · 智慧园区管理系统</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select style="padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:13px">
+            <option>优先级：全部</option><option>Must Have</option><option>Should Have</option>
+          </select>
+          <input type="text" placeholder="搜索需求..." style="padding:6px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;width:200px">
+        </div>
+      </div>
+
+      <div class="req-item">
+        <div class="priority-bar" style="background:var(--danger)"></div>
+        <div class="req-id">REQ-2026-001</div>
+        <div class="req-content">
+          <div class="req-title">
+            用户登录与权限管理模块
+            <span class="tag tag-must">Must Have</span>
+            <span class="tag tag-doing">开发中</span>
+          </div>
+          <div class="req-desc">支持微信扫码登录、账号密码登录、手机验证码登录；基于RBAC的权限管理系统，支持角色分配和菜单级权限控制。</div>
+          <div class="req-meta">
+            <span><i class="fas fa-layer-group"></i>Epic: 用户中心</span>
+            <span><i class="fas fa-user"></i>张经理</span>
+            <span><i class="far fa-clock"></i>截止 04-10</span>
+            <span><i class="fas fa-comment"></i>8 条评论</span>
+          </div>
+        </div>
+        <div class="req-right">
+          <div class="progress-mini"><div class="fill" style="width:65%;background:var(--warning)"></div></div>
+          <span style="font-size:12px;color:#999">65%</span>
+        </div>
+      </div>
+
+      <div class="req-item">
+        <div class="priority-bar" style="background:var(--danger)"></div>
+        <div class="req-id">REQ-2026-002</div>
+        <div class="req-content">
+          <div class="req-title">
+            数据大屏可视化
+            <span class="tag tag-must">Must Have</span>
+            <span class="tag tag-todo">待开发</span>
+          </div>
+          <div class="req-desc">园区实时监控数据大屏，包含安防监控、能耗分析、人员密度、设备运行状态等可视化图表。</div>
+          <div class="req-meta">
+            <span><i class="fas fa-layer-group"></i>Epic: 数据中心</span>
+            <span><i class="fas fa-user"></i>李架构师</span>
+            <span><i class="far fa-clock"></i>截止 04-20</span>
+            <span><i class="fas fa-comment"></i>3 条评论</span>
+          </div>
+        </div>
+        <div class="req-right">
+          <div class="progress-mini"><div class="fill" style="width:10%;background:var(--primary)"></div></div>
+          <span style="font-size:12px;color:#999">10%</span>
+        </div>
+      </div>
+
+      <div class="req-item">
+        <div class="priority-bar" style="background:var(--warning)"></div>
+        <div class="req-id">REQ-2026-005</div>
+        <div class="req-content">
+          <div class="req-title">
+            访客预约管理系统
+            <span class="tag tag-should">Should Have</span>
+            <span class="tag tag-done">已完成</span>
+          </div>
+          <div class="req-desc">在线预约访客到访，支持二维码扫码通行、访客登记、黑名单管理、预约审批流程。</div>
+          <div class="req-meta">
+            <span><i class="fas fa-layer-group"></i>Epic: 安防管理</span>
+            <span><i class="fas fa-user"></i>王开发</span>
+            <span><i class="fas fa-check"></i>已完成 03-28</span>
+          </div>
+        </div>
+        <div class="req-right">
+          <div class="progress-mini"><div class="fill" style="width:100%;background:var(--success)"></div></div>
+          <span style="font-size:12px;color:var(--success)">100%</span>
+        </div>
+      </div>
+
+      <div class="req-item">
+        <div class="priority-bar" style="background:var(--primary)"></div>
+        <div class="req-id">REQ-2026-008</div>
+        <div class="req-content">
+          <div class="req-title">
+            智能停车引导系统
+            <span class="tag tag-could">Could Have</span>
+            <span class="tag tag-todo">待评审</span>
+          </div>
+          <div class="req-desc">基于车牌识别的智能停车管理，包含车位引导、车位预约、无感支付、长期车位管理等功能。</div>
+          <div class="req-meta">
+            <span><i class="fas fa-layer-group"></i>Epic: 车辆管理</span>
+            <span><i class="fas fa-user"></i>赵产品</span>
+            <span><i class="far fa-clock"></i>截止 05-15</span>
+            <span><i class="fas fa-comment"></i>15 条评论</span>
+          </div>
+        </div>
+        <div class="req-right">
+          <div class="progress-mini"><div class="fill" style="width:0%;background:#eee"></div></div>
+          <span style="font-size:12px;color:#999">0%</span>
+        </div>
+      </div>
+
+      <div class="req-item">
+        <div class="priority-bar" style="background:var(--danger)"></div>
+        <div class="req-id">REQ-2026-010</div>
+        <div class="req-content">
+          <div class="req-title">
+            智能门禁与考勤对接
+            <span class="tag tag-must">Must Have</span>
+            <span class="tag tag-doing">开发中</span>
+          </div>
+          <div class="req-desc">对接人脸识别门禁设备，实现员工考勤数据自动采集、异常考勤标记、请假审批联动。</div>
+          <div class="req-meta">
+            <span><i class="fas fa-layer-group"></i>Epic: 安防管理</span>
+            <span><i class="fas fa-user"></i>李架构师</span>
+            <span><i class="far fa-clock"></i>截止 04-08</span>
+            <span><i class="fas fa-exclamation-circle" style="color:var(--danger)"></i>有变更</span>
+          </div>
+        </div>
+        <div class="req-right">
+          <div class="progress-mini"><div class="fill" style="width:80%;background:var(--warning)"></div></div>
+          <span style="font-size:12px;color:#999">80%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <span>显示 1-5 / 共 86 条</span>
+      <div class="page-btns">
+        <span class="page-btn active">1</span>
+        <span class="page-btn">2</span>
+        <span class="page-btn">3</span>
+        <span class="page-btn">...</span>
+        <span class="page-btn">18</span>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
