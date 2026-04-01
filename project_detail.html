@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO | 项目详情</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root{--primary:#0052d9;--success:#00a870;--warning:#ed7b2f;--danger:#e34d59;--info:#6175d6;--bg:#f6f8fa;--border:#e5e5e5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#333}
+.header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--primary);text-decoration:none}
+.header-right{display:flex;align-items:center;gap:16px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
+.breadcrumb{padding:12px 24px;background:#fff;border-bottom:1px solid var(--border);font-size:13px;color:#999}
+.breadcrumb a{color:var(--primary);text-decoration:none}
+.project-hero{background:#fff;padding:24px;border-bottom:1px solid var(--border)}
+.project-hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.project-hero h1{font-size:22px;font-weight:700;display:flex;align-items:center;gap:12px}
+.project-hero h1 .code{font-size:13px;color:#999;font-weight:400}
+.badge{padding:4px 10px;border-radius:4px;font-size:12px;font-weight:500}
+.badge-success{background:#e7faf0;color:var(--success)}
+.badge-warning{background:#fff2e8;color:var(--warning)}
+.meta-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.meta-item label{font-size:12px;color:#999;display:block;margin-bottom:4px}
+.meta-item span{font-size:14px;font-weight:500}
+.tabs{background:#fff;border-bottom:1px solid var(--border);display:flex;padding:0 24px}
+.tab{padding:14px 20px;font-size:14px;color:#666;cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
+.tab:hover{color:var(--primary)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:500}
+.tab-content{padding:24px}
+.panel{background:#fff;border-radius:8px;border:1px solid var(--border);padding:20px;margin-bottom:20px}
+.panel-title{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--border)}
+.timeline-item.done::before{background:var(--success);border-color:var(--success)}
+.timeline-item.current::before{background:var(--primary);border-color:var(--primary);box-shadow:0 0 0 4px #e8f3ff}
+.timeline-item.delayed::before{background:var(--danger);border-color:var(--danger)}
+.timeline-title{font-size:14px;font-weight:500}
+.timeline-date{font-size:12px;color:#999;margin-top:2px}
+.timeline-desc{font-size:13px;color:#666;margin-top:4px}
+.member-list{display:flex;flex-wrap:wrap;gap:12px}
+.member-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f6f8fa;border-radius:6px;border:1px solid var(--border)}
+.member-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+.member-info .name{font-size:13px;font-weight:500}
+.member-info .role{font-size:11px;color:#999}
+.req-list table{width:100%;border-collapse:collapse;font-size:13px}
+.req-list th{background:#f6f8fa;padding:10px 12px;text-align:left;font-weight:600;color:#555;border-bottom:1px solid var(--border)}
+.req-list td{padding:10px 12px;border-bottom:1px solid #f0f0f0}
+.req-status{padding:3px 8px;border-radius:3px;font-size:11px;font-weight:500}
+.btn{padding:7px 14px;border-radius:4px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:1px solid transparent}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-outline{border-color:var(--border);background:#fff;color:#555}
+.btn-sm{padding:4px 10px;font-size:12px}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{text-align:center;padding:20px;background:#fff;border-radius:8px;border:1px solid var(--border)}
+.stat-card .num{font-size:28px;font-weight:700}
+.stat-card .label{font-size:12px;color:#999;margin-top:4px}
+</style>
+</head>
+<body>
+<header class="header">
+  <a class="logo" href="dashboard.html"><i class="fas fa-project-diagram"></i> PMO 项目管理平台</a>
+  <div class="header-right">
+    <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> 编辑</button>
+    <button class="btn btn-outline btn-sm"><i class="fas fa-share-alt"></i> 分享</button>
+    <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 添加成员</button>
+    <i class="fas fa-bell" style="font-size:17px;color:#666;cursor:pointer"></i>
+    <div class="avatar">张</div>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="projects.html">项目中心</a> <i class="fas fa-chevron-right" style="font-size:10px;margin:0 8px"></i> 智慧园区综合管理系统
+</div>
+
+<!-- 项目概览 -->
+<div class="project-hero">
+  <div class="project-hero-top">
+    <h1>
+      智慧园区综合管理系统
+      <span class="code">PRJ-2026-001</span>
+      <span class="badge badge-success">进行中</span>
+    </h1>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline"><i class="fas fa-file-export"></i> 导出报告</button>
+      <button class="btn btn-primary"><i class="fas fa-rocket"></i> 发起部署</button>
+    </div>
+  </div>
+  <div class="meta-grid">
+    <div class="meta-item"><label>项目经理</label><span>张经理</span></div>
+    <div class="meta-item"><label>客户</label><span>万科集团</span></div>
+    <div class="meta-item"><label>项目类型</label><span>软件开发</span></div>
+    <div class="meta-item"><label>计划周期</label><span>01-15 ~ 04-15</span></div>
+    <div class="meta-item"><label>当前阶段</label><span style="color:var(--warning)">⚙️ 测试阶段</span></div>
+  </div>
+  <div style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:6px">
+      <span>项目进度 80%</span>
+      <span>剩余 15 天</span>
+    </div>
+    <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden">
+      <div style="width:80%;height:100%;background:linear-gradient(90deg,var(--success),var(--primary));border-radius:4px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 标签页 -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(this,'overview')">📋 概览</div>
+  <div class="tab" onclick="switchTab(this,'requirement')">📝 需求 (28)</div>
+  <div class="tab" onclick="switchTab(this,'task')">✅ 任务 (45)</div>
+  <div class="tab" onclick="switchTab(this,'defect')">🐛 缺陷 (12)</div>
+  <div class="tab" onclick="switchTab(this,'milestone')">🎯 里程碑</div>
+  <div class="tab" onclick="switchTab(this,'member')">👥 成员 (8)</div>
+  <div class="tab" onclick="switchTab(this,'doc')">📎 文档</div>
+</div>
+
+<!-- 概览面板 -->
+<div class="tab-content" id="tab-overview">
+  <div class="stat-cards">
+    <div class="stat-card"><div class="num" style="color:var(--primary)">28</div><div class="label">需求总数</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--success)">22</div><div class="label">已完成需求</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--warning)">12</div><div class="label">活跃缺陷</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--info)">85</div><div class="label">健康度评分</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <!-- 里程碑时间线 -->
+    <div class="panel">
+      <div class="panel-title">🎯 项目里程碑</div>
+      <div class="timeline">
+        <div class="timeline-item done">
+          <div class="timeline-title">需求评审通过</div>
+          <div class="timeline-date">2026-01-25</div>
+          <div class="timeline-desc">共确认28条需求，评审意见已处理完毕</div>
+        </div>
+        <div class="timeline-item done">
+          <div class="timeline-title">方案设计确认</div>
+          <div class="timeline-date">2026-02-05</div>
+          <div class="timeline-desc">技术方案 v2.0 获得客户签字确认</div>
+        </div>
+        <div class="timeline-item done">
+          <div class="timeline-title">Sprint 1-4 完成</div>
+          <div class="timeline-date">2026-02-28</div>
+          <div class="timeline-desc">核心功能模块开发完成，进入联调</div>
+        </div>
+        <div class="timeline-item current">
+          <div class="timeline-title">Sprint 5-6 测试阶段</div>
+          <div class="timeline-date">2026-03-17 ~ 04-05 (进行中)</div>
+          <div class="timeline-desc">系统测试 + UAT 验收，已完成 65% 测试用例</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-title">部署上线</div>
+          <div class="timeline-date">2026-04-10 (计划)</div>
+          <div class="timeline-desc">生产环境部署，含灰度发布策略</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-title">客户验收</div>
+          <div class="timeline-date">2026-04-15 (计划)</div>
+          <div class="timeline-desc">最终验收 + 移交运维</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 项目成员 -->
+    <div class="panel">
+      <div class="panel-title">👥 项目成员 <button class="btn btn-outline btn-sm"><i class="fas fa-user-plus"></i> 邀请</button></div>
+      <div class="member-list">
+        <div class="member-card"><div class="member-avatar" style="background:var(--primary)">张</div><div class="member-info"><div class="name">张经理</div><div class="role">项目经理</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:var(--success)">李</div><div class="member-info"><div class="name">李需求</div><div class="role">需求分析师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:var(--info)">王</div><div class="member-info"><div class="name">王架构</div><div class="role">技术架构师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:var(--primary)">赵</div><div class="member-info"><div class="name">赵开发</div><div class="role">开发工程师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:var(--warning)">陈</div><div class="member-info"><div class="name">陈前端</div><div class="role">开发工程师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:var(--danger)">周</div><div class="member-info"><div class="name">周测试</div><div class="role">测试工程师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:#7c3aed">孙</div><div class="member-info"><div class="name">孙实施</div><div class="role">实施工程师</div></div></div>
+        <div class="member-card"><div class="member-avatar" style="background:#0891b2">吴</div><div class="member-info"><div class="name">吴运维</div><div class="role">运维工程师</div></div></div>
+      </div>
+    </div>
+
+    <!-- 最近需求 -->
+    <div class="panel">
+      <div class="panel-title">📝 最新需求</div>
+      <div class="req-list">
+        <table>
+          <tr><td style="font-weight:500">访客预约管理系统</td><td><span class="req-status" style="background:#e7faf0;color:var(--success)">已完成</span></td><td style="color:#999">03-20</td></tr>
+          <tr><td style="font-weight:500">能耗监控大屏</td><td><span class="req-status" style="background:#e8f3ff;color:var(--primary)">开发中</span></td><td style="color:#999">03-22</td></tr>
+          <tr><td style="font-weight:500">门禁系统人脸识别</td><td><span class="req-status" style="background:#e8f3ff;color:var(--primary)">开发中</span></td><td style="color:#999">03-25</td></tr>
+          <tr><td style="font-weight:500">物业缴费对接</td><td><span class="req-status" style="background:#fff2e8;color:var(--warning)">评审中</span></td><td style="color:#999">03-28</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 最近缺陷 -->
+    <div class="panel">
+      <div class="panel-title">🐛 活跃缺陷 <span style="background:var(--danger);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">12</span></div>
+      <div class="req-list">
+        <table>
+          <tr><td><span style="color:var(--danger);font-weight:600">严重</span> 车位导航路线计算偏移</td><td>周测试 → 赵开发</td><td style="color:#999">03-30</td></tr>
+          <tr><td><span style="color:var(--warning);font-weight:600">主要</span> 支付回调偶发超时</td><td>周测试 → 张经理</td><td style="color:#999">03-29</td></tr>
+          <tr><td><span style="color:var(--warning);font-weight:600">主要</span> 大屏数据刷新延迟</td><td>周测试 → 陈前端</td><td style="color:#999">03-28</td></tr>
+          <tr><td><span style="color:var(--info);font-weight:600">一般</span> 日期选择器样式错位</td><td>周测试 → 陈前端</td><td style="color:#999">03-27</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(el,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(p=>p.style.display='none');
+  const panel=document.getElementById('tab-'+id);
+  if(panel) panel.style.display='block';
+  else el.closest('.tab-content')&&alert('原型演示：'+el.textContent+' 页面开发中');
+}
+</script>
+</body>
+</html>
